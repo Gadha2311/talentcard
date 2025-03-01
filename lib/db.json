@@ -1,0 +1,14 @@
+{
+  "profile": {
+    "name": "Jim Doe",
+    "title": "Junior React Developer",
+    "image": "https://cdn-icons-png.flaticon.com/512/3135/3135715.png",
+    "bio": "This is a sample text. Insert your desired text here. Jane is a creative UX/UI designer who specializes in user-friendly layouts.",
+    "skills": [
+      { "name": "React", "percentage": 90 },
+      { "name": "Node", "percentage": 85 },
+      { "name": "TypeScript", "percentage": 80 }
+    ],
+    "contact": "jane@example.com"
+  }
+}
