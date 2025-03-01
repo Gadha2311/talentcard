@@ -1,6 +1,5 @@
 "use client";
 import { useEffect, useState } from "react";
-import axios from "axios";
 import data from "@/lib/db.json"
 import TalentProfileCard from "@/components/TalentProfileCard";
 

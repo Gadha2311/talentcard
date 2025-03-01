@@ -1,6 +1,4 @@
 "use client";
-import Image from "next/image";
-
 
 interface Skill {
   name: string;
@@ -21,25 +19,17 @@ interface TalentProfileCardProps {
 }
 
 export default function TalentProfileCard({ profile }: TalentProfileCardProps) {
- 
-
-  
-
   return (
     <div className="max-w-3xl w-full bg-white shadow-lg rounded-2xl overflow-hidden flex flex-col md:flex-row transform transition duration-300 hover:scale-105 hover:shadow-xl border border-gray-200">
-   
       <div className="relative w-full md:w-1/2 bg-gradient-to-b from-blue-500 to-blue-700 flex items-center justify-center p-6">
-      
         <div className="absolute inset-0 flex justify-center items-center pointer-events-none">
           <div className="w-64 h-64 bg-blue-300 rounded-full opacity-50"></div>
         </div>
 
-      
         <div className="relative w-40 h-40 rounded-full overflow-hidden z-10 shadow-xl border-4 border-white">
           <img
             src={profile.image}
             alt="Profile Picture"
-
             className="object-cover"
           />
         </div>
@@ -51,7 +41,6 @@ export default function TalentProfileCard({ profile }: TalentProfileCardProps) {
         </div>
       </div>
 
-    
       <div className="w-full md:w-1/2 p-6 flex flex-col gap-4">
         <h1 className="text-2xl font-bold text-gray-800">Member Profile</h1>
         <h2 className="text-xl font-semibold text-blue-700">{profile.name}</h2>
@@ -63,7 +52,9 @@ export default function TalentProfileCard({ profile }: TalentProfileCardProps) {
           {profile.skills.length > 0 ? (
             profile.skills.map((skill) => (
               <div key={skill.name}>
-                <p className="text-xs font-medium text-gray-700">{skill.name}</p>
+                <p className="text-xs font-medium text-gray-700">
+                  {skill.name}
+                </p>
                 <div className="w-full bg-gray-200 rounded-full h-3">
                   <div
                     className="bg-blue-600 h-3 rounded-full transition-all duration-300 hover:bg-blue-700"
@@ -77,7 +68,6 @@ export default function TalentProfileCard({ profile }: TalentProfileCardProps) {
           )}
         </div>
 
-      
         <button
           onClick={() => (window.location.href = `mailto:${profile.contact}`)}
           className="mt-4 w-full bg-blue-600 hover:bg-blue-700 text-white py-2 rounded-lg shadow-md transition-all duration-300 hover:shadow-lg transform hover:scale-105"
