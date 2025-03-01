@@ -1,5 +1,5 @@
 "use client";
-import { useState } from "react";
+// import { useState } from "react";
 import data from "@/lib/db.json"
 import TalentProfileCard from "@/components/TalentProfileCard";
 
@@ -18,8 +18,8 @@ interface TalentProfile {
 }
 
 export default function Home() {
-  const [profile, setProfile] = useState<TalentProfile | null>(null);
-  const [loading, setLoading] = useState(false);
+//   const [profile, setProfile] = useState<TalentProfile | null>(null);
+//   const [loading, setLoading] = useState(false);
 
   return (
     <div className="min-h-screen flex items-center justify-center bg-gray-100 p-4">
