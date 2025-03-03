@@ -5,7 +5,7 @@ interface Skill {
   percentage: number;
 }
 
-interface TalentProfile {
+export interface TalentProfile {
   companyName: string;
   companyProfile: string;
   createdAt: number;

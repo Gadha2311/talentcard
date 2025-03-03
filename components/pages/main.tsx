@@ -17,7 +17,7 @@ export default function Home() {
         const response = await axios.get(
           "https://67205fcae7a5792f0531492a.mockapi.io/api/v1/jobs"
         );
-        // console.log(response.data);
+      
 
         setProfiles(response.data || []);
       } catch (error) {

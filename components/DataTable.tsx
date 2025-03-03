@@ -1,6 +1,7 @@
-"use client"
+"use client";
 
-import * as React from "react"
+import * as React from "react";
+import { useRouter } from "next/navigation";
 import {
   ColumnDef,
   SortingState,
@@ -11,11 +12,10 @@ import {
   getPaginationRowModel,
   getSortedRowModel,
   useReactTable,
-} from "@tanstack/react-table"
-import { ArrowUpDown, ChevronDown, MoreHorizontal } from "lucide-react"
+} from "@tanstack/react-table";
+import { ArrowUpDown, ChevronDown, MoreHorizontal } from "lucide-react";
 
-import { Button } from "@/components/ui/button"
-
+import { Button } from "@/components/ui/button";
 import {
   DropdownMenu,
   DropdownMenuCheckboxItem,
@@ -24,8 +24,8 @@ import {
   DropdownMenuLabel,
   DropdownMenuSeparator,
   DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu"
-import { Input } from "@/components/ui/input"
+} from "@/components/ui/dropdown-menu";
+import { Input } from "@/components/ui/input";
 import {
   Table,
   TableBody,
@@ -33,35 +33,34 @@ import {
   TableHead,
   TableHeader,
   TableRow,
-} from "@/components/ui/table"
+} from "@/components/ui/table";
 
 export type Job = {
-  id: string
-  companyName: string
-  companyProfile: string
-  createdAt: number
-  description: string
-  jobTitle: string
-  location: string
-  type: string
-}
+  id: string;
+  companyName: string;
+  companyProfile: string;
+  createdAt: number;
+  description: string;
+  jobTitle: string;
+  location: string;
+  type: string;
+};
 
-
-export const columns: ColumnDef<Job>[] = [
-  {
-    accessorKey: "companyName",
-    header: "Company Name",
-    cell: ({ row }) => <div>{row.getValue("companyName")}</div>,
-  },
+export const columns = (
+  router: ReturnType<typeof useRouter>
+): ColumnDef<Job>[] => [
   {
     accessorKey: "companyProfile",
-    header: "Company Profile",
+    header: "Company",
     cell: ({ row }) => (
-      <img
-        src={row.getValue("companyProfile")}
-        alt="Company Profile"
-        className="w-12 h-12 rounded-full"
-      />
+      <div className="flex items-center gap-2 px-6">
+        <img
+          src={row.getValue("companyProfile")}
+          alt="Company Logo"
+          className="w-12 h-12 rounded-full border shadow-md "
+        />
+        <span className="font-medium">{row.original.companyName}</span>
+      </div>
     ),
   },
   {
@@ -69,13 +68,15 @@ export const columns: ColumnDef<Job>[] = [
     header: ({ column }) => (
       <Button
         variant="ghost"
-        onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
+        onClick={() => column.toggleSorting()}
+        className="flex items-center gap-2"
       >
-        Job Title
-        <ArrowUpDown />
+        Job Title <ArrowUpDown className="w-4 h-4" />
       </Button>
     ),
-    cell: ({ row }) => <div>{row.getValue("jobTitle")}</div>,
+    cell: ({ row }) => (
+      <div className="font-medium">{row.getValue("jobTitle")}</div>
+    ),
   },
   {
     accessorKey: "location",
@@ -85,38 +86,45 @@ export const columns: ColumnDef<Job>[] = [
   {
     accessorKey: "type",
     header: "Job Type",
-    cell: ({ row }) => <div>{row.getValue("type")}</div>,
+    cell: ({ row }) => (
+      <div className="font-medium text-blue-600">{row.getValue("type")}</div>
+    ),
   },
   {
     accessorKey: "createdAt",
-    header: "Created At",
+    header: "Posted On",
     cell: ({ row }) => {
-      const timestamp = row.getValue("createdAt") as number; // Ensure it's treated as a number
-      const formattedDate = new Date(timestamp * 1000).toLocaleDateString();
-      return <div>{formattedDate}</div>;
+      const timestamp = row.getValue("createdAt") as number;
+      return (
+        <div className="text-gray-600">
+          {new Date(timestamp * 1000).toLocaleDateString()}
+        </div>
+      );
     },
   },
-  
   {
     accessorKey: "description",
     header: "Description",
-    cell: ({ row }) => <div>{row.getValue("description")}</div>,
+    cell: ({ row }) => (
+      <div className="truncate w-56 text-gray-700">
+        {row.getValue("description")}
+      </div>
+    ),
   },
   {
     id: "actions",
     enableHiding: false,
     cell: ({ row }) => {
-      const job = row.original
-
+      const job = row.original;
       return (
         <DropdownMenu>
           <DropdownMenuTrigger asChild>
             <Button variant="ghost" className="h-8 w-8 p-0">
               <span className="sr-only">Open menu</span>
-              <MoreHorizontal />
+              <MoreHorizontal className="w-5 h-5" />
             </Button>
           </DropdownMenuTrigger>
-          <DropdownMenuContent align="end">
+          <DropdownMenuContent align="end" className="bg-zinc-300">
             <DropdownMenuLabel>Actions</DropdownMenuLabel>
             <DropdownMenuItem
               onClick={() => navigator.clipboard.writeText(job.id)}
@@ -124,23 +132,26 @@ export const columns: ColumnDef<Job>[] = [
               Copy Job ID
             </DropdownMenuItem>
             <DropdownMenuSeparator />
-            <DropdownMenuItem>View Details</DropdownMenuItem>
+            <DropdownMenuItem onClick={() => router.push(`/${job.id}`)}>
+              View Details
+            </DropdownMenuItem>
           </DropdownMenuContent>
         </DropdownMenu>
-      )
+      );
     },
   },
-]
+];
+
 
 export function DataTableDemo({ data }: { data: Job[] }) {
-  const [sorting, setSorting] = React.useState<SortingState>([])
+  const [sorting, setSorting] = React.useState<SortingState>([]);
   const [columnVisibility, setColumnVisibility] =
-    React.useState<VisibilityState>({})
-    const [globalFilter, setGlobalFilter] = React.useState("");
-
+    React.useState<VisibilityState>({});
+  const [globalFilter, setGlobalFilter] = React.useState("");
+  const router = useRouter();
   const table = useReactTable({
     data,
-    columns,
+    columns: columns(router),
     onSortingChange: setSorting,
     getCoreRowModel: getCoreRowModel(),
     getPaginationRowModel: getPaginationRowModel(),
@@ -148,42 +159,33 @@ export function DataTableDemo({ data }: { data: Job[] }) {
     getFilteredRowModel: getFilteredRowModel(),
     onColumnVisibilityChange: setColumnVisibility,
     onGlobalFilterChange: setGlobalFilter,
-    state: {
-        sorting,
-        columnVisibility,
-        globalFilter,
-      },
-      initialState: {
-        pagination: {
-          pageSize: 5, 
-        },
-      },
-    })
+    state: { sorting, columnVisibility, globalFilter },
+    initialState: { pagination: { pageSize: 5 } },
+  });
 
   return (
-    <div className="w-full">
-      <div className="flex items-center py-4">
+    <div className="w-full p-4 bg-white rounded-lg shadow-lg">
+      {/* Search & Column Controls */}
+      <div className="flex flex-col md:flex-row items-center justify-between py-4">
         <Input
-          placeholder="Filter jobs..."
-          className="max-w-sm"
-          value={globalFilter} 
+          placeholder="Search jobs..."
+          className="max-w-sm border rounded-md p-2"
+          value={globalFilter}
           onChange={(e) => setGlobalFilter(e.target.value)}
         />
         <DropdownMenu>
           <DropdownMenuTrigger asChild>
-            <Button variant="outline" className="ml-auto">
-              Columns <ChevronDown />
+            <Button variant="outline" className="mt-2 md:mt-0">
+              Columns <ChevronDown className="ml-2 w-4 h-4 " />
             </Button>
           </DropdownMenuTrigger>
-          <DropdownMenuContent align="end" side="right">
+          <DropdownMenuContent align="end" className="bg-zinc-300">
             {table.getAllColumns().map((column) => (
               <DropdownMenuCheckboxItem
                 key={column.id}
                 className="capitalize"
                 checked={column.getIsVisible()}
-                onCheckedChange={(value) =>
-                  column.toggleVisibility(!!value)
-                }
+                onCheckedChange={(value) => column.toggleVisibility(!!value)}
               >
                 {column.id}
               </DropdownMenuCheckboxItem>
@@ -191,13 +193,15 @@ export function DataTableDemo({ data }: { data: Job[] }) {
           </DropdownMenuContent>
         </DropdownMenu>
       </div>
-      <div className="rounded-md border">
+
+      {/* Table */}
+      <div className="rounded-md border overflow-x-auto">
         <Table>
           <TableHeader>
             {table.getHeaderGroups().map((headerGroup) => (
               <TableRow key={headerGroup.id}>
                 {headerGroup.headers.map((header) => (
-                  <TableHead key={header.id}>
+                  <TableHead key={header.id} className="px-4 py-2 text-left">
                     {flexRender(
                       header.column.columnDef.header,
                       header.getContext()
@@ -208,31 +212,41 @@ export function DataTableDemo({ data }: { data: Job[] }) {
             ))}
           </TableHeader>
           <TableBody>
-            {table.getRowModel().rows?.length ? (
+            {table.getRowModel().rows.length ? (
               table.getRowModel().rows.map((row) => (
-                <TableRow key={row.id}>
+                <TableRow
+                  key={row.id}
+                  className="hover:bg-gray-100 transition-all"
+                >
                   {row.getVisibleCells().map((cell) => (
-                    <TableCell key={cell.id}>
-                      {flexRender(cell.column.columnDef.cell, cell.getContext())}
+                    <TableCell key={cell.id} className="px-4 py-2">
+                      {flexRender(
+                        cell.column.columnDef.cell,
+                        cell.getContext()
+                      )}
                     </TableCell>
                   ))}
                 </TableRow>
               ))
             ) : (
               <TableRow>
-                <TableCell colSpan={columns.length} className="h-24 text-center">
-                  No results.
+                <TableCell
+                  colSpan={columns.length}
+                  className="h-24 text-center text-gray-500"
+                >
+                  No results found.
                 </TableCell>
               </TableRow>
             )}
           </TableBody>
         </Table>
       </div>
+
       <div className="flex items-center justify-end space-x-2 py-4">
         <Button
           variant="outline"
           size="sm"
-          onClick={() => table.previousPage()}
+          onClick={table.previousPage}
           disabled={!table.getCanPreviousPage()}
         >
           Previous
@@ -240,12 +254,12 @@ export function DataTableDemo({ data }: { data: Job[] }) {
         <Button
           variant="outline"
           size="sm"
-          onClick={() => table.nextPage()}
+          onClick={table.nextPage}
           disabled={!table.getCanNextPage()}
         >
           Next
         </Button>
       </div>
     </div>
-  )
+  );
 }
