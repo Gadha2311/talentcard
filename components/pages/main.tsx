@@ -32,7 +32,7 @@ export default function Home() {
     fetchData();
   }, []);
   return (
-    <div className="min-h-screen bg-gray-100 p-4 flex flex-col items-center gap-6">
+    <div className="min-h-screen bg-[linear-gradient(150deg,_#969696,_#818482,_#6c7370,_#566260,_#425153,_#2f4047,_#1d303e,_#0e1f38)]  p-4 flex flex-col items-center gap-6">
       {loading ? (
       <p>Loading...</p> 
     ) : profiles.length === 0 ? (

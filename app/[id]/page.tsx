@@ -31,7 +31,7 @@ function page() {
     fetchData();
   }, []);
   return (
-    <div className="min-h-screen min-w-full flex items-center justify-center">
+    <div className="min-h-screen min-w-full bg-[linear-gradient(150deg,_#969696,_#818482,_#6c7370,_#566260,_#425153,_#2f4047,_#1d303e,_#0e1f38)]  flex items-center justify-center">
     {!loading && <TalentProfileCard profile={profile!}/>}
     </div>
   )

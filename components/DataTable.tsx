@@ -50,19 +50,24 @@ export const columns = (
   router: ReturnType<typeof useRouter>
 ): ColumnDef<Job>[] => [
   {
-    accessorKey: "companyProfile",
+    accessorKey: "companyName",
     header: "Company",
+    filterFn: (row, columnId, filterValue) => {
+      const value = row.getValue(columnId) as string;
+      return value?.toLowerCase().includes(filterValue.toLowerCase());
+    },
     cell: ({ row }) => (
       <div className="flex items-center gap-2 px-6">
         <img
-          src={row.getValue("companyProfile")}
+          src={row.original.companyProfile}
           alt="Company Logo"
-          className="w-12 h-12 rounded-full border shadow-md "
+          className="w-12 h-12 rounded-full border shadow-md"
         />
         <span className="font-medium">{row.original.companyName}</span>
       </div>
     ),
   },
+
   {
     accessorKey: "jobTitle",
     header: ({ column }) => (
@@ -142,7 +147,6 @@ export const columns = (
   },
 ];
 
-
 export function DataTableDemo({ data }: { data: Job[] }) {
   const [sorting, setSorting] = React.useState<SortingState>([]);
   const [columnVisibility, setColumnVisibility] =
@@ -161,15 +165,20 @@ export function DataTableDemo({ data }: { data: Job[] }) {
     onGlobalFilterChange: setGlobalFilter,
     state: { sorting, columnVisibility, globalFilter },
     initialState: { pagination: { pageSize: 5 } },
+    globalFilterFn: (row, columnId, filterValue) => {
+      return String(row.getValue(columnId))
+        .toLowerCase()
+        .includes(filterValue.toLowerCase());
+    },
   });
 
   return (
-    <div className="w-full p-4 bg-white rounded-lg shadow-lg">
+    <div className="w-full p-4 bg-blue-200  rounded-4xl shadow-2xl border">
       {/* Search & Column Controls */}
-      <div className="flex flex-col md:flex-row items-center justify-between py-4">
+      <div className="flex flex-col md:flex-row items-center justify-between py-4 gap-4">
         <Input
           placeholder="Search jobs..."
-          className="max-w-sm border rounded-md p-2"
+          className="max-w-sm border border-gray-300 rounded-md p-2 focus:ring-2 focus:ring-blue-400"
           value={globalFilter}
           onChange={(e) => setGlobalFilter(e.target.value)}
         />
@@ -179,11 +188,14 @@ export function DataTableDemo({ data }: { data: Job[] }) {
               Columns <ChevronDown className="ml-2 w-4 h-4 " />
             </Button>
           </DropdownMenuTrigger>
-          <DropdownMenuContent align="end" className="bg-zinc-300">
+          <DropdownMenuContent
+            align="end"
+            className="bg-white shadow-md border rounded-md"
+          >
             {table.getAllColumns().map((column) => (
               <DropdownMenuCheckboxItem
                 key={column.id}
-                className="capitalize"
+                className="capitalize px-7 py-3 hover:bg-gray-200"
                 checked={column.getIsVisible()}
                 onCheckedChange={(value) => column.toggleVisibility(!!value)}
               >
@@ -195,13 +207,16 @@ export function DataTableDemo({ data }: { data: Job[] }) {
       </div>
 
       {/* Table */}
-      <div className="rounded-md border overflow-x-auto">
-        <Table>
-          <TableHeader>
+      <div className="rounded-md border shadow-lg overflow-x-auto bg-white">
+        <Table className="w-full border-collapse">
+          <TableHeader className="bg-white">
             {table.getHeaderGroups().map((headerGroup) => (
               <TableRow key={headerGroup.id}>
                 {headerGroup.headers.map((header) => (
-                  <TableHead key={header.id} className="px-4 py-2 text-left">
+                  <TableHead
+                    key={header.id}
+                    className="px-4 py-3 text-left font-semibold border-b"
+                  >
                     {flexRender(
                       header.column.columnDef.header,
                       header.getContext()
@@ -216,10 +231,11 @@ export function DataTableDemo({ data }: { data: Job[] }) {
               table.getRowModel().rows.map((row) => (
                 <TableRow
                   key={row.id}
-                  className="hover:bg-gray-100 transition-all"
+                  className="cursor-pointer transition-all duration-200  hover:bg-blue-100 hover:shadow-md hover:scale-[1.01] odd:bg-white even:bg-white"
+                  onClick={() => router.push(`/${row.original.id}`)}
                 >
                   {row.getVisibleCells().map((cell) => (
-                    <TableCell key={cell.id} className="px-4 py-2">
+                    <TableCell key={cell.id} className="px-4 py-3 border-b">
                       {flexRender(
                         cell.column.columnDef.cell,
                         cell.getContext()
@@ -248,6 +264,7 @@ export function DataTableDemo({ data }: { data: Job[] }) {
           size="sm"
           onClick={table.previousPage}
           disabled={!table.getCanPreviousPage()}
+          className="hover:bg-blue-100 transition"
         >
           Previous
         </Button>
@@ -256,6 +273,7 @@ export function DataTableDemo({ data }: { data: Job[] }) {
           size="sm"
           onClick={table.nextPage}
           disabled={!table.getCanNextPage()}
+          className="hover:bg-blue-100 transition"
         >
           Next
         </Button>
